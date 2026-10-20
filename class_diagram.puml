@@ -1,5 +1,59 @@
 @startuml
 !include theme.puml
 
+class UserPreference{
+    - user_id: str
+    - channel_preference: Set[ChannelType]
+}
+
+enum ChannelType <<enum>>{
+    - EMAIL
+    - SMS
+    - PUSH
+}
+
+class Notification{
+    - user_id: str
+    - message: str
+    - type: ChannelType
+}
+
+Notification --> ChannelType
+UserPreference --> ChannelType
+
+interface NotificationChannel <<interface>>{
+    + send(notification: Notification)
+}
+
+NotificationChannel <|.. EmailNotificationChannel
+NotificationChannel <|.. SmsNotificationChannel
+NotificationChannel <|.. PushNotificationChannel
+
+class NotificationService{
+    - dispatcher: NotificationDispatcher
+    - notify(notification: Notification)
+}
+
+class NotificationDispatcher{
+    - user_preference_service: UserPreferenceService
+    - dispatch(notification: Notification)
+}
+
+class UserPreferenceService{
+    - preferences: Dict[str, UserPreference]
+    + save_preference(preference: UserPreference)
+    + get_user_preference(user_id: str) -> UserPreference
+}
+
+class NotificationChannelFactory{
+    - get_channel_type(channel_type: ChannelType) -> NotificationChannel
+}
+
+NotificationService --> NotificationDispatcher
+NotificationService --> Notification
+NotificationDispatcher --> UserPreferenceService
+NotificationDispatcher --> NotificationChannelFactory
+NotificationChannelFactory ..> NotificationChannel : returns
+UserPreferenceService --> UserPreference
 
 @enduml

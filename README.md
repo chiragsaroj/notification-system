@@ -42,3 +42,23 @@ NotificationDispatcher - dispatches user notification through multiple channels 
 
 4. Interactions
 
+Flow: 
+1. client calls notification service
+2. service:
+    - fetches user_preference
+    - select channel
+    - create notification object 
+    - send via channel
+3. if failure apply retry policy
+
+Relationship: 
+NotificationService:
+    -  Depends on NotificationDispatcher to dispatch notifications
+
+NotificationDispatcher:
+    - Fetches user preference 
+    - dispatch notification to NotificationChannel uses factory to create channel
+
+Preference:
+    - saves user preference objects 
+    - provides use rpreference wherever needed
