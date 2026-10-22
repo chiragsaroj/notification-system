@@ -1,4 +1,4 @@
-@startuml
+@startuml NotificationSystem
 !include theme.puml
 
 class UserPreference{
